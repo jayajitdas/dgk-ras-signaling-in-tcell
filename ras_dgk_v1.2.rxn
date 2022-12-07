@@ -1,0 +1,146 @@
+region World box width 1 height 1 depth 1
+subvolume edge 1
+
+
+-- signal representing TCR-antigen signaling complex----
+
+-- membrane binding of SOS---
+rxn L:sig(a#) R:sos(r#) at konsigsos -> L.a # R.r
+rxn L:sig(a#1)sos(r#1,a#,c#) at koffsigsos -> break 1
+rxn L:sig(a#1)sos(r#1,a#2,c#)r(d#2,T="off") at koffsigsos -> break 1; break 2
+rxn L:sig(a#1)sos(r#1,a#2,c#3)r(d#2,T="off")r(d#3,T="off") at koffsigsos -> break 1; break 2; break 3
+
+rxn L:sig(a#1)sos(r#1,a#2,c#)r(d#2,T="on") at koffsigsos -> break 1; break 2
+rxn L:sig(a#1)sos(r#1,a#2,c#3)r(d#2,T="on")r(d#3,T="off") at koffsigsos -> break 1; break 2; break 3
+
+--membrane binding of PLCg
+
+rxn L:sig(b#) R:plcg(r#) at konplcg -> L.b # R.r
+rxn L:sig(b#1)plcg(r#1) at koffplcg -> break 1
+
+
+-- DAG production by signal---
+
+rxn L:plcg(r#_) R:PIP2 at kproddag -> destroy R; new DAG(T="on")
+
+-- Rasgrp1 binding to DAG----
+
+rxn L:DAG(a#,T="on") R:Rasgrp1(r#) at konrgrp -> L.a # R.r
+rxn L:DAG(a#1,T="on")Rasgrp1(r#1) at koffrgrp -> break 1
+
+
+-- Ras activation by Rasgrp1 --
+
+rxn L:Rasgrp1(r#_,c#) R:r(d#, T="off") at konrdrgrp -> L.c # R.d
+rxn L:Rasgrp1(r#_,c#1)r(d#1, T="off") at koffrdrgrp -> break 1
+rxn L:Rasgrp1(r#_,c#1)R:r(d#1, T="off") at kfrdrgrp -> break 1; R.T="on"
+
+-- Ras activation by SOS ---
+
+
+-- Catalytic pocket binding when the allosteric pocket is empty
+
+rxn L:sos(r#_,a#, c#) R:r(d#,T="off") at konsrd -> L.c # R.d
+rxn L:sos(r#_,a#, c#1)r(d#1,T="off") at koffsrd -> break 1
+
+-- Catalytic pocket binding when the allosteric pocket is bound to RasGDP
+
+rxn L:sos(r#_,a#2, c#)r(d#2,T="off") R:r(d#,T="off") at konsardrd -> L.c # R.d
+rxn L:sos(r#_,a#2, c#1)r(d#2,T="off")r(d#1,T="off") at koffsardrd -> break 1
+
+-- Catalytic pocket binding when the allosteric pocket is bound to RasGTP
+
+rxn L:sos(r#_,a#2, c#)r(d#2,T="on") R:r(d#,T="off") at konsartrd -> L.c # R.d
+rxn L:sos(r#_,a#2, c#1)r(d#2,T="on")r(d#1,T="off") at koffsartrd -> break 1
+
+
+-- Catalysis when the allosteric pocket is empty
+
+rxn L:sos(r#_,a#, c#1)R:r(d#1,T="off") at kfsrd -> R.T="on"; break 1
+
+
+
+-- Allosteric pocket binding -> GDP binding
+
+rxn L:sos(r#_,a#) R:r(d#,T="off") at konsard -> L.a # R.d
+rxn L:sos(r#_,a#1)r(d#1) at koffsard -> break 1
+
+-- Allosteric pocket binding --> GTP binding
+
+rxn L:sos(r#_,a#) R:r(d#,T="on") at konsart -> L.a # R.d
+rxn L:sos(r#_,a#1)r(d#1,T="on") at koffsart -> break 1
+
+--- Catalysis when allosteric pockets are occupied
+
+rxn L:sos(r#_,c#1,a#2)r(d#2,T="off")R:r(d#1,T="off") at kfsard -> R.T="on"; break 1
+rxn L:sos(r#_,c#1,a#2)r(d#2,T="on")R:r(d#1,T="off") at kfsart -> R.T="on"; break 1
+
+ 
+-- GAP action
+
+rxn L:g(s#) R:r(d#,T="on") at kongrt -> L.s # R.d
+rxn L:g(s#1)r(d#1,T="on") at koffgrt -> break 1
+rxn L:g(s#1)R:r(d#1,T="on") at kfgrt -> R.T="off"; break 1
+
+
+--- DGKa and DGKz --
+-- DGKa binding and catalyzing free DAG
+
+rxn L:DAG(a#,b#,T="on") R:DGKa(p#) at kondgka -> L.b # R.p
+rxn L:DAG(a#,b#1,T="on")DGKa(p#1) at koffdgka -> break 1
+rxn L:DAG(a#,b#1,T="on")L1:DGKa(p#1) at kddgka -> break 1; L.T="off"
+
+-- DGKa binding and catalyzing Rasgrp1 bound DAG
+
+rxn L:DAG(a#_,b#,T="on") R:DGKa(p#) at kondgka -> L.b # R.p
+rxn L:DAG(a#_,b#1,T="on")DGKa(p#1) at koffdgka -> break 1
+rxn L:DAG(a#2,b#1,T="on")Rasgrp1(r#2)L1:DGKa(p#1) at kddgka -> break 1; break 2;  L.T="off"
+
+-- DGKz binding and catalyzing free DAG
+
+rxn L:DAG(a#,b#,T="on") R:DGKz(p#) at kondgkz -> L.b # R.p
+rxn L:DAG(a#,b#1,T="on")DGKz(p#1) at koffdgkz -> break 1
+rxn L:DAG(a#,b#1,T="on")L1:DGKz(p#1) at kddgkz -> break 1; L.T="off"
+
+-- DGKz binding and catalyzing Rasgrp1 bound DAG
+
+rxn L:DAG(a#_,b#,T="on") R:DGKz(p#) at kondgkz1 -> L.b # R.p
+rxn L:DAG(a#_,b#1,T="on")DGKz(p#1) at koffdgkz1 -> break 1
+rxn L:DAG(a#2,b#1,T="on")Rasgrp1(r#2)L1:DGKz(p#1) at kddgkz1 -> break 1; break 2;  L.T="off"
+
+
+new sig at densig
+new PIP2 at denpip2
+new sos at densos
+new Rasgrp1 at  denrgrp1
+new DGKa at dendgka
+new DGKz at dendgkz
+new r(T="off") at denrd
+new r(T="on") at denrt
+new g at deng
+new DAG(T="on") at dendag
+new DAG(T="off") at denpa
+new plcg at denplcg
+
+
+
+record sos(a#2)r(d#2,T="on")
+record r(d#,T="on")
+record sig(a#1)sos(r#1)
+record DAG(a#1)Rasgrp1(r#1)
+
+--line 5
+record PIP2
+record DAG(T="on")
+record Rasgrp1(r#_,c#1)r(d#1, T="off")
+record g(s#1)r(d#1,T="on")
+
+--line 9
+record sos(r#_)
+record r(T="on")
+record DGKa(p#_)
+record DGKz(p#_)
+record plcg(r#_)
+
+--line 14
+record DAG(T="off")
