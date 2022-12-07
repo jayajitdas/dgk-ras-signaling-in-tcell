@@ -1,5 +1,5 @@
 # dzk-ras-signaling-in-tcell
-This is a Ras signaling model in T cell reported in Joshi et al. Science Signaling 2013; PMID: 24280043. The codes are written in Stochastic Simulation Compiler (SSC). These codes were previously available in http://planetx.nationwidechildrens.org/~jayajit/. The planetx link does not work anymore. 
+This is a Ras signaling model in T cell reported in Joshi et al. Science Signaling 2013; PMID: 24280043. Ras activation (RasGDP -> RasGTP is regulated by RasGEFs Rasgrp1 and SOS1. Rasgrp1 in turn is influcened by diacylglycerol kinases (DGKs). The codes are written in Stochastic Simulation Compiler (SSC). These codes were previously available in http://planetx.nationwidechildrens.org/~jayajit/. The planetx link does not work anymore. 
 
 This is a well mixed Ras signaling in T cells published in Joshi et al. Science Signaling 2013; PMID: 24280043. The codes are written in Stochastic Simulation Compiler (SSC). These codes were previously available in http://planetx.nationwidechildrens.org/~jayajit/.
 
